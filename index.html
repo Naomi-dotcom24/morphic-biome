@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Morphic Biome | 形态生态</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #f8f9f8; font-family: sans-serif; -webkit-tap-highlight-color: transparent; color: #333; }
+        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 2.5rem; }
+        .btn-active { background: white; shadow: 0 10px 15px -3px rgba(0,0,0,0.1); transform: scale(1.05); border-color: #94a695; }
+        .morphic-ball { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; animation: morph 8s ease-in-out infinite; }
+        @keyframes morph { 0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; } 50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; } }
+    </style>
+</head>
+<body class="p-6 pb-24">
+    <header class="mb-10 mt-4">
+        <h1 class="text-[10px] tracking-[0.2em] text-gray-400 uppercase font-medium">Morphic Biome</h1>
+        <p class="text-2xl font-light mt-1">记录今日生态</p>
+    </header>
+
+    <main class="space-y-10">
+        <section>
+            <p class="text-[10px] text-gray-400 mb-4 uppercase tracking-widest">Bristol Scale 形态</p>
+            <div class="grid grid-cols-4 gap-3">
+                <button onclick="setVal('type', 1, this)" class="glass p-4 text-[10px] flex flex-col items-center gap-2"><span>●</span><span>1型</span></button>
+                <button onclick="setVal('type(4)', 4, this)" class="glass p-4 text-[10px] flex flex-col items-center gap-2 btn-active"><span>▬</span><span>4型</span></button>
+                <button onclick="setVal('type', 6, this)" class="glass p-4 text-[10px] flex flex-col items-center gap-2"><span>≈</span><span>6型</span></button>
+                <button onclick="setVal('type', 7, this)" class="glass p-4 text-[10px] flex flex-col items-center gap-2"><span>〰</span><span>7型</span></button>
+            </div>
+        </section>
+
+        <section>
+            <p class="text-[10px] text-gray-400 mb-4 uppercase tracking-widest">CMF 色彩评估</p>
+            <div class="flex gap-4">
+                <div onclick="setVal('color', '#E6D5B8', this)" class="w-12 h-12 rounded-full border-4 border-white shadow-sm cursor-pointer" style="background:#E6D5B8"></div>
+                <div onclick="setVal('color', '#A38A6A', this)" class="w-12 h-12 rounded-full border-4 border-white shadow-sm cursor-pointer ring-2 ring-gray-200" style="background:#A38A6A"></div>
+                <div onclick="setVal('color', '#735F4D', this)" class="w-12 h-12 rounded-full border-4 border-white shadow-sm cursor-pointer" style="background:#735F4D"></div>
+            </div>
+        </section>
+
+        <button onclick="save()" class="w-full py-5 bg-black text-white rounded-full text-[10px] tracking-[0.3em] uppercase mt-4 active:scale-95 transition-transform shadow-xl">保存记录</button>
+    </main>
+
+    <footer class="fixed bottom-10 left-0 w-full px-6 pointer-events-none">
+        <div id="status-ball" class="morphic-ball w-16 h-16 bg-gradient-to-br from-green-100 to-sage-200 mx-auto opacity-50 shadow-inner"></div>
+    </footer>
+
+    <script>
+        let current = { type: 4, color: '#A38A6A' };
+        function setVal(k, v, el) {
+            current[k] = v;
+            el.parentElement.querySelectorAll('*').forEach(n => n.classList.remove('btn-active', 'ring-black', 'ring-2'));
+            if(el.tagName === 'DIV') el.classList.add('ring-2', 'ring-black');
+            else el.classList.add('btn-active');
+        }
+        function save() {
+            let logs = JSON.parse(localStorage.getItem('morphic_v2') || '[]');
+            logs.unshift({...current, time: new Date()});
+            localStorage.setItem('morphic_v2', JSON.stringify(logs));
+            alert('记录已安全存储在本地。');
+        }
+    </script>
+</body>
+</html>
