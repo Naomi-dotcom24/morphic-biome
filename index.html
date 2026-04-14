@@ -3,63 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Morphic Biome | 形态生态</title>
+    <title>Morphic Biome 2.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #f8f9f8; font-family: sans-serif; -webkit-tap-highlight-color: transparent; color: #333; }
-        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 2.5rem; }
-        .btn-active { background: white; shadow: 0 10px 15px -3px rgba(0,0,0,0.1); transform: scale(1.05); border-color: #94a695; }
-        .morphic-ball { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; animation: morph 8s ease-in-out infinite; }
-        @keyframes morph { 0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; } 50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; } }
+        :root { --sage: #94a695; --clay: #d9d2c5; --bg: #f8f9f8; }
+        body { background: var(--bg); font-family: sans-serif; -webkit-tap-highlight-color: transparent; color: #333; overflow-x: hidden; }
+        .squircle { border-radius: 2.8rem; }
+        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.3); }
+        .btn-active { background: white; shadow: 0 10px 20px rgba(0,0,0,0.05); transform: scale(1.03); border: 1.5px solid var(--sage); }
+        
+        /* 动态 CMF 状态球 */
+        .morphic-ball { transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1); animation: rotate 20s linear infinite; }
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        
+        /* 极简滚动条 */
+        ::-webkit-scrollbar { display: none; }
+        .page { display: none; animation: fadeIn 0.5s ease; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body class="p-6 pb-24">
-    <header class="mb-10 mt-4">
-        <h1 class="text-[10px] tracking-[0.2em] text-gray-400 uppercase font-medium">Morphic Biome</h1>
-        <p class="text-2xl font-light mt-1">记录今日生态</p>
+<body class="p-6 pb-32">
+
+    <header class="flex justify-between items-center mb-10 mt-2">
+        <div>
+            <h1 class="text-[10px] tracking-[0.3em] text-gray-400 uppercase">Morphic Biome</h1>
+            <p id="page-title" class="text-2xl font-light">记录生态</p>
+        </div>
+        <div id="nav-dots" class="flex gap-1">
+            <div class="w-1.5 h-1.5 rounded-full bg-sage-300"></div>
+        </div>
     </header>
 
-    <main class="space-y-10">
+    <main id="page-record" class="page active space-y-10">
         <section>
-            <p class="text-[10px] text-gray-400 mb-4 uppercase tracking-widest">Bristol Scale 形态</p>
+            <p class="text-[10px] text-gray-400 mb-4 uppercase tracking-widest">Bristol 形态评估</p>
             <div class="grid grid-cols-4 gap-3">
                 <button onclick="setVal('type', 1, this)" class="glass p-4 text-[10px] flex flex-col items-center gap-2"><span>●</span><span>1型</span></button>
-                <button onclick="setVal('type(4)', 4, this)" class="glass p-4 text-[10px] flex flex-col items-center gap-2 btn-active"><span>▬</span><span>4型</span></button>
+                <button onclick="setVal('type', 2, this)" class="glass p-4 text-[10px] flex flex-col items-center gap-2"><span>⬒</span><span>2型</span></button>
+                <button onclick="setVal('type', 4, this)" class="glass p-4 text-[10px] flex flex-col items-center gap-2 btn-active"><span>▬</span><span>4型</span></button>
                 <button onclick="setVal('type', 6, this)" class="glass p-4 text-[10px] flex flex-col items-center gap-2"><span>≈</span><span>6型</span></button>
-                <button onclick="setVal('type', 7, this)" class="glass p-4 text-[10px] flex flex-col items-center gap-2"><span>〰</span><span>7型</span></button>
             </div>
         </section>
 
         <section>
-            <p class="text-[10px] text-gray-400 mb-4 uppercase tracking-widest">CMF 色彩评估</p>
+            <p class="text-[10px] text-gray-400 mb-4 uppercase tracking-widest">CMF 色彩</p>
             <div class="flex gap-4">
-                <div onclick="setVal('color', '#E6D5B8', this)" class="w-12 h-12 rounded-full border-4 border-white shadow-sm cursor-pointer" style="background:#E6D5B8"></div>
-                <div onclick="setVal('color', '#A38A6A', this)" class="w-12 h-12 rounded-full border-4 border-white shadow-sm cursor-pointer ring-2 ring-gray-200" style="background:#A38A6A"></div>
-                <div onclick="setVal('color', '#735F4D', this)" class="w-12 h-12 rounded-full border-4 border-white shadow-sm cursor-pointer" style="background:#735F4D"></div>
+                <div onclick="setVal('color', '#E6D5B8', this)" class="w-12 h-12 rounded-full border-4 border-white shadow-sm" style="background:#E6D5B8"></div>
+                <div onclick="setVal('color', '#A38A6A', this)" class="w-12 h-12 rounded-full border-4 border-white shadow-sm ring-2 ring-black" style="background:#A38A6A"></div>
+                <div onclick="setVal('color', '#735F4D', this)" class="w-12 h-12 rounded-full border-4 border-white shadow-sm" style="background:#735F4D"></div>
+                <div onclick="setVal('color', '#2B2B2B', this)" class="w-12 h-12 rounded-full border-4 border-white shadow-sm" style="background:#2B2B2B"></div>
             </div>
         </section>
 
-        <button onclick="save()" class="w-full py-5 bg-black text-white rounded-full text-[10px] tracking-[0.3em] uppercase mt-4 active:scale-95 transition-transform shadow-xl">保存记录</button>
+        <section>
+            <p class="text-[10px] text-gray-400 mb-4 uppercase tracking-widest">排便感受</p>
+            <div class="grid grid-cols-4 gap-3">
+                <button onclick="setVal('feel', '畅快', this)" class="glass py-3 text-[10px] btn-active">畅快</button>
+                <button onclick="setVal('feel', '费劲', this)" class="glass py-3 text-[10px]">费劲</button>
+                <button onclick="setVal('feel', '未尽', this)" class="glass py-3 text-[10px]">未尽</button>
+                <button onclick="setVal('feel', '痛', this)" class="glass py-3 text-[10px]">痛</button>
+            </div>
+        </section>
+
+        <div class="pt-4 space-y-4">
+            <button onclick="save(false)" class="w-full py-5 bg-black text-white rounded-full text-[10px] tracking-[0.3em] uppercase shadow-xl active:scale-95 transition-transform">保存记录</button>
+            <button onclick="save(true)" class="w-full py-4 border border-dashed border-gray-300 text-gray-400 rounded-full text-[10px] tracking-[0.2em] uppercase">今日未排便</button>
+        </div>
     </main>
 
-    <footer class="fixed bottom-10 left-0 w-full px-6 pointer-events-none">
-        <div id="status-ball" class="morphic-ball w-16 h-16 bg-gradient-to-br from-green-100 to-sage-200 mx-auto opacity-50 shadow-inner"></div>
-    </footer>
+    <main id="page-history" class="page space-y-6">
+        <div id="timeline" class="space-y-4">
+            </div>
+    </main>
+
+    <main id="page-analysis" class="page">
+        <div class="flex flex-col items-center py-10">
+            <div id="morphic-ball" class="morphic-ball w-56 h-56 bg-gradient-to-br from-green-100 to-sage-200 opacity-60 shadow-2xl flex items-center justify-center text-center p-8">
+                <p id="ball-text" class="text-[10px] leading-relaxed tracking-wider text-gray-600 font-medium"></p>
+            </div>
+        </div>
+
+        <div class="glass squircle p-8 mb-8">
+            <p class="text-[10px] text-gray-400 mb-6 uppercase tracking-widest text-center">纤维摄入色谱 (7Days)</p>
+            <div id="fiber-spectrum" class="w-full h-3 rounded-full bg-gray-100 flex overflow-hidden">
+                </div>
+            <div class="flex justify-between mt-3 text-[8px] text-gray-300 uppercase tracking-tighter">
+                <span>低纤维</span>
+                <span>理想纤维</span>
+            </div>
+        </div>
+    </main>
+
+    <nav class="fixed bottom-8 left-6 right-6 h-16 glass squircle flex items-center justify-around px-4 shadow-lg">
+        <button onclick="switchPage('record')" class="text-gray-400 p-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"></path></svg></button>
+        <button onclick="switchPage('history')" class="text-gray-400 p-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+        <button onclick="switchPage('analysis')" class="text-gray-400 p-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2z"></path></svg></button>
+    </nav>
 
     <script>
-        let current = { type: 4, color: '#A38A6A' };
+        let current = { type: 4, color: '#A38A6A', feel: '畅快' };
+        let logs = JSON.parse(localStorage.getItem('morphic_v3') || '[]');
+
         function setVal(k, v, el) {
             current[k] = v;
-            el.parentElement.querySelectorAll('*').forEach(n => n.classList.remove('btn-active', 'ring-black', 'ring-2'));
-            if(el.tagName === 'DIV') el.classList.add('ring-2', 'ring-black');
-            else el.classList.add('btn-active');
+            el.parentElement.querySelectorAll('*').forEach(n => n.classList.remove('btn-active', 'ring-2', 'ring-black'));
+            el.classList.add(el.tagName === 'DIV' ? 'ring-black' : 'btn-active');
+            if(el.tagName === 'DIV') el.classList.add('ring-2');
         }
-        function save() {
-            let logs = JSON.parse(localStorage.getItem('morphic_v2') || '[]');
-            logs.unshift({...current, time: new Date()});
-            localStorage.setItem('morphic_v2', JSON.stringify(logs));
-            alert('记录已安全存储在本地。');
+
+        function save(isNone) {
+            const entry = isNone ? { isNone: true, time: new Date() } : { ...current, time: new Date() };
+            logs.unshift(entry);
+            localStorage.setItem('morphic_v3', JSON.stringify(logs));
+            alert(isNone ? '已记录空窗期' : '生态已存入本地');
+            switchPage('history');
         }
+
+        function switchPage(p) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById('page-' + p).classList.add('active');
+            document.getElementById('page-title').innerText = p === 'record' ? '记录生态' : (p === 'history' ? '健康时间轴' : '生态分析');
+            if(p === 'history') renderHistory();
+            if(p === 'analysis') renderAnalysis();
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('timeline');
+            container.innerHTML = logs.map(l => `
+                <div class="glass squircle p-6 flex items-center justify-between animate-in fade-in">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full" style="background: ${l.isNone ? '#eee' : l.color}"></div>
+                        <div>
+                            <p class="text-[10px] font-medium">${new Date(l.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</p>
+                            <p class="text-[8px] text-gray-400 uppercase tracking-widest">${l.isNone ? '未排便' : l.type + '型 · ' + l.feel}</p>
+                        </div>
+                    </div>
+                    <div class="text-[8px] text-gray-300 uppercase">${new Date(l.time).toLocaleDateString()}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderAnalysis() {
+            const last7Days = logs.slice(0, 10);
+            const avgType = last7Days.filter(l => !l.isNone).reduce((a, b) => a + b.type, 0) / (last7Days.filter(l => !l.isNone).length || 1);
+            
+            const ball = document.getElementById('morphic-ball');
+            const ballText = document.getElementById('ball-text');
+            
+            // CMF 动态逻辑
+            if(avgType < 3) {
+                ball.style.borderRadius = "30% 70% 70% 30% / 30% 30% 70% 70%"; // 棱角感
+                ball.style.background = "linear-gradient(to br, #d9d2c5, #a38a6a)";
+                ballText.innerText = "生态呈【干枯粗糙】态。纤维摄入显著偏离理想值，建议引入高湿度食材。";
+            } else if(avgType > 5) {
+                ball.style.borderRadius = "50% 50% 50% 50% / 30% 30% 70% 70%"; // 垂坠感
+                ball.style.filter = "hue-rotate(150deg)";
+                ballText.innerText = "生态呈【过度流动】态。吸收界面不稳定，建议优化材质构成。";
+            } else {
+                ball.style.borderRadius = "60% 40% 30% 70% / 60% 30% 70% 40%"; // 圆润感
+                ball.style.background = "linear-gradient(to br, #e1eadd, #94a695)";
+                ballText.innerText = "生态平衡。当前材质组合展现出理想的通透感与弹性。";
+            }
+
+            // 纤维色谱渲染
+            const spectrum = document.getElementById('fiber-spectrum');
+            spectrum.innerHTML = '';
+            for(let i=0; i<7; i++) {
+                const dayLog = logs.find(l => new Date(l.time).getDate() === new Date().getDate() - i);
+                const block = document.createElement('div');
+                block.className = "flex-1 h-full";
+                block.style.background = (!dayLog || dayLog.isNone || dayLog.type < 3) ? '#d9d2c5' : '#94a695';
+                spectrum.appendChild(block);
+            }
+        }
+        
+        switchPage('record');
     </script>
 </body>
 </html>
